@@ -2,7 +2,7 @@ from __future__ import division
 import torch
 import math
 import random
-from PIL import Image, ImageOps, ImageEnhance, PILLOW_VERSION
+from PIL import Image, ImageOps, ImageEnhance
 try:
     import accimage
 except ImportError:
@@ -10,7 +10,7 @@ except ImportError:
 import numpy as np
 import numbers
 import types
-import collections
+from collections.abc import Iterable
 import warnings
 
 
@@ -67,6 +67,8 @@ def to_tensor(pic):
     elif pic.mode == '1':
         img = 255 * torch.from_numpy(np.array(pic, np.uint8, copy=False))
     else:
+        #img = torch.frombuffer(pic.tobytes(), dtype=torch.uint8)
+        #img = torch.frombuffer(pic.tobytes(), dtype=torch.uint8)
         img = torch.ByteTensor(torch.ByteStorage.from_buffer(pic.tobytes()))
     # PIL image mode: L, P, I, F, RGB, YCbCr, RGBA, CMYK
     if pic.mode == 'YCbCr':
@@ -187,7 +189,7 @@ def resize(img, size, interpolation=Image.BILINEAR):
     """
     if not _is_pil_image(img):
         raise TypeError('img should be PIL Image. Got {}'.format(type(img)))
-    if not (isinstance(size, int) or (isinstance(size, collections.Iterable) and len(size) == 2)):
+    if not (isinstance(size, int) or (isinstance(size, Iterable) and len(size) == 2)):
         raise TypeError('Got inappropriate size arg: {}'.format(size))
 
     if isinstance(size, int):

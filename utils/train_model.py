@@ -12,9 +12,9 @@ from torch.autograd import Variable
 #from torchvision.utils import make_grid, save_image
 
 from utils.utils import LossRecord, clip_gradient
-from models.focal_loss import FocalLoss
+#from models.focal_loss import FocalLoss
 from utils.eval_model import eval_turn
-from utils.Asoftmax_loss import AngleLoss
+#from utils.Asoftmax_loss import AngleLoss
 
 import pdb
 
@@ -30,7 +30,7 @@ def train(Config,
           exp_lr_scheduler,
           data_loader,
           save_dir,
-          data_size=448,
+          data_size=320,
           savepoint=500,
           checkpoint=1000
           ):
@@ -55,8 +55,8 @@ def train(Config,
 
     add_loss = nn.L1Loss()
     get_ce_loss = nn.CrossEntropyLoss()
-    get_focal_loss = FocalLoss()
-    get_angle_loss = AngleLoss()
+    #get_focal_loss = FocalLoss()
+    #get_angle_loss = AngleLoss()
 
     for epoch in range(start_epoch,epoch_num-1):
         exp_lr_scheduler.step(epoch)
@@ -81,12 +81,11 @@ def train(Config,
                 swap_law = Variable(torch.from_numpy(np.array(swap_law)).float().cuda())
 
             optimizer.zero_grad()
-
+            
             if inputs.size(0) < 2*train_batch_size:
                 outputs = model(inputs, inputs[0:-1:2])
             else:
                 outputs = model(inputs, None)
-
             if Config.use_focal_loss:
                 ce_loss = get_focal_loss(outputs[0], labels)
             else:

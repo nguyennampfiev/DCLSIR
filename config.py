@@ -9,8 +9,7 @@ from utils.autoaugment import ImageNetPolicy
 pretrained_model = {'resnet50' : './models/pretrained/resnet50-19c8e357.pth',}
 
 # transforms dict
-def load_data_transformers(resize_reso=512, crop_reso=448, swap_num=[7, 7]):
-    center_resize = 600
+def load_data_transformers(resize_reso=320, crop_reso=320, swap_num=[5, 5]):
     Normalize = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     data_transforms = {
        	'swap': transforms.Compose([
@@ -82,6 +81,11 @@ class LoadConfig(object):
             self.rawdata_root = './dataset/aircraft/data'
             self.anno_root = './dataset/aircraft/anno'
             self.numcls = 100
+        elif args.dataset == 'CHAM':
+            self.dataset = args.dataset
+            self.rawdata_root = './datasets/CHAM/data'
+            self.anno_root = './datasets/CHAM/anno'
+            self.numcls = 53
         else:
             raise Exception('dataset not defined ???')
 
@@ -90,21 +94,21 @@ class LoadConfig(object):
 
         if 'train' in get_list:
              self.train_anno = pd.read_csv(os.path.join(self.anno_root, 'ct_train.txt'),\
-                                           sep=" ",\
+                                           sep="\t",\
                                            header=None,\
-                                           names=['ImageName', 'label'])
+                                           names=['ImageName', 'label'],encoding='utf-8')
 
         if 'val' in get_list:
-            self.val_anno = pd.read_csv(os.path.join(self.anno_root, 'ct_val.txt'),\
-                                           sep=" ",\
+            self.val_anno = pd.read_csv(os.path.join(self.anno_root, 'ct_train.txt'),\
+                                           sep="\t",\
                                            header=None,\
-                                           names=['ImageName', 'label'])
+                                           names=['ImageName', 'label'],encoding='utf-8')
 
         if 'test' in get_list:
             self.test_anno = pd.read_csv(os.path.join(self.anno_root, 'ct_test.txt'),\
-                                           sep=" ",\
+                                           sep="\t",\
                                            header=None,\
-                                           names=['ImageName', 'label'])
+                                           names=['ImageName', 'label'],encoding='utf-8')
 
         self.swap_num = args.swap_num
 

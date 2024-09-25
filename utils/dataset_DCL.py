@@ -30,7 +30,7 @@ def random_sample(img_names, labels):
 
 
 class dataset(data.Dataset):
-    def __init__(self, Config, anno, swap_size=[7,7], common_aug=None, swap=None, totensor=None, train=False, train_val=False, test=False):
+    def __init__(self, Config, anno, swap_size=[3,3], common_aug=None, swap=None, totensor=None, train=False, train_val=False, test=False):
         self.root_path = Config.rawdata_root
         self.numcls = Config.numcls
         self.dataset = Config.dataset
@@ -119,15 +119,19 @@ class dataset(data.Dataset):
 
 def collate_fn4train(batch):
     imgs = []
-    label = []
+    labels = []
     label_swap = []
     law_swap = []
     img_name = []
+    #img = []
+    #label = []
     for sample in batch:
+        #img.append(sample[0])
+        #label.append(sample[2])
         imgs.append(sample[0])
         imgs.append(sample[1])
-        label.append(sample[2])
-        label.append(sample[2])
+        labels.append(sample[2])
+        labels.append(sample[2])
         if sample[3] == -1:
             label_swap.append(1)
             label_swap.append(0)
@@ -137,7 +141,7 @@ def collate_fn4train(batch):
         law_swap.append(sample[4])
         law_swap.append(sample[5])
         img_name.append(sample[-1])
-    return torch.stack(imgs, 0), label, label_swap, law_swap, img_name
+    return torch.stack(imgs, 0), labels, label_swap, law_swap, img_name
 
 def collate_fn4val(batch):
     imgs = []

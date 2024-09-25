@@ -40,9 +40,9 @@ def parse_args():
     parser.add_argument('--epoch', dest='epoch',
                         default=360, type=int)
     parser.add_argument('--tb', dest='train_batch',
-                        default=16, type=int)
+                        default=64, type=int)
     parser.add_argument('--vb', dest='val_batch',
-                        default=512, type=int)
+                        default=64, type=int)
     parser.add_argument('--sp', dest='save_point',
                         default=5000, type=int)
     parser.add_argument('--cp', dest='check_point',
@@ -62,14 +62,14 @@ def parse_args():
     parser.add_argument('--detail', dest='discribe',
                         default='', type=str)
     parser.add_argument('--size', dest='resize_resolution',
-                        default=512, type=int)
+                        default=320, type=int)
     parser.add_argument('--crop', dest='crop_resolution',
-                        default=448, type=int)
+                        default=320, type=int)
     parser.add_argument('--cls_2', dest='cls_2',
                         action='store_true')
     parser.add_argument('--cls_mul', dest='cls_mul',
                         action='store_true')
-    parser.add_argument('--swap_num', default=[7, 7],
+    parser.add_argument('--swap_num', default=[5, 5],
                     nargs=2, metavar=('swap1', 'swap2'),
                     type=int, help='specify a range')
     args = parser.parse_args()
@@ -103,7 +103,7 @@ if __name__ == '__main__':
                         swap = transformers["swap"],\
                         totensor = transformers["train_totensor"],\
                         train = True)
-
+    #Config.rawdata_root = '/data/tnguye28/Stamp/test-Stamp'
     trainval_set = dataset(Config = Config,\
                         anno = Config.train_anno,\
                         common_aug = transformers["None"],\

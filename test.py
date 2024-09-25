@@ -32,7 +32,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
 def parse_args():
     parser = argparse.ArgumentParser(description='dcl parameters')
     parser.add_argument('--data', dest='dataset',
-                        default='CUB', type=str)
+                        default='CHAM', type=str)
     parser.add_argument('--backbone', dest='backbone',
                         default='resnet50', type=str)
     parser.add_argument('--b', dest='batch_size',
