@@ -1,0 +1,3 @@
+img =[orig_img; swap]
+label = [label; labels]
+labes_swap=[label; labels_swap]
