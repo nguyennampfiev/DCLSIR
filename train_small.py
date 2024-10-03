@@ -90,8 +90,8 @@ if __name__ == '__main__':
     args = parse_args()
     print(args, flush=True)
     Config = LoadConfig(args, 'train')
-    Config.cls_2 = args.cls_2
-    Config.cls_2xmul = args.cls_mul
+    Config.cls_2 = True#args.cls_2 #
+    Config.cls_2xmul = False#args.cls_mul
     assert Config.cls_2 ^ Config.cls_2xmul
 
     transformers = load_data_transformers(args.resize_resolution, args.crop_resolution, args.swap_num)

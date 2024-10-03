@@ -118,7 +118,6 @@ class MainModelSmall(nn.Module):
             self.Convmask = nn.Conv2d(256, 1, 1, stride=1, padding=0, bias=True)
         
     def forward(self, x, last_cont=None):
-        print(x.shape)
         #assert 1==2
         x = self.model(x)
         x= self.reduce_chanel(x)
@@ -135,4 +134,4 @@ class MainModelSmall(nn.Module):
         if self.use_dcl:
             out.append(self.classifier_swap(x))
             out.append(mask)
-        return out
+        return out, x
