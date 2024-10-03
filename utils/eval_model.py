@@ -41,7 +41,7 @@ def eval_turn(Config, model, data_loader, val_version, epoch_num, log_file):
         for batch_cnt_val, data_val in enumerate(data_loader):
             inputs = Variable(data_val[0].cuda())
             labels = Variable(torch.from_numpy(np.array(data_val[1])).long().cuda())
-            outputs = model(inputs)
+            outputs, out = model(inputs)
             loss = 0
 
             ce_loss = get_ce_loss(outputs[0], labels).item()

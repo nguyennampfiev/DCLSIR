@@ -4,7 +4,7 @@
 
 Run `train.py` to train DCL.
 
-For training CUB / STCAR / AIR from scratch
+For training CHAM from scratch
 
 ```shell
 python train.py --data CHAM --epoch 360 --backbone resnet50 \
@@ -14,3 +14,4 @@ python train.py --data CHAM --epoch 360 --backbone resnet50 \
                     --detail training_descibe --size 192 \
                     --crop 192 --cls_mul --swap_num 5 5
 ```
+For test see notebook file

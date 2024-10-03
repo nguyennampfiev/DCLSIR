@@ -15,6 +15,8 @@ from utils.utils import LossRecord, clip_gradient
 #from models.focal_loss import FocalLoss
 from utils.eval_model import eval_turn
 #from utils.Asoftmax_loss import AngleLoss
+from pytorch_metric_learning import losses, miners, samplers, testers, trainers
+from pytorch_metric_learning.miners import BatchEasyHardMiner
 
 import pdb
 
@@ -55,6 +57,9 @@ def train(Config,
 
     add_loss = nn.L1Loss()
     get_ce_loss = nn.CrossEntropyLoss()
+    get_triplet_loss =  losses.TripletMarginLoss(margin=0.25)
+    miner = miners.BatchEasyHardMiner(pos_strategy=BatchEasyHardMiner.HARD, neg_strategy=BatchEasyHardMiner.HARD)    
+
     #get_focal_loss = FocalLoss()
     #get_angle_loss = AngleLoss()
 
@@ -83,22 +88,27 @@ def train(Config,
             optimizer.zero_grad()
             
             if inputs.size(0) < 2*train_batch_size:
-                outputs = model(inputs, inputs[0:-1:2])
+                outputs, out = model(inputs, inputs[0:-1:2])
             else:
-                outputs = model(inputs, None)
+                outputs, out = model(inputs, None)
             if Config.use_focal_loss:
                 ce_loss = get_focal_loss(outputs[0], labels)
             else:
                 ce_loss = get_ce_loss(outputs[0], labels)
-
-            if Config.use_Asoftmax:
-                fetch_batch = labels.size(0)
-                if batch_cnt % (train_epoch_step // 5) == 0:
-                    angle_loss = get_angle_loss(outputs[3], labels[0:fetch_batch:2], decay=0.9)
-                else:
-                    angle_loss = get_angle_loss(outputs[3], labels[0:fetch_batch:2])
-                loss += angle_loss
-
+            #ce_loss = 0
+#             if Config.use_Asoftmax:
+#                 fetch_batch = labels.size(0)
+#                 if batch_cnt % (train_epoch_step // 5) == 0:
+#                     angle_loss = get_angle_loss(outputs[3], labels[0:fetch_batch:2], decay=0.9)
+#                 else:
+#                     angle_loss = get_angle_loss(outputs[3], labels[0:fetch_batch:2])
+#                 loss += angle_loss
+                
+            if Config.use_tripletLoss:
+                miner_output = miner(out, labels)
+                loss_triplet = get_triplet_loss(out, labels, miner_output)
+            loss_triplet=0    
+            #loss += 10*loss_triplet
             loss += ce_loss
 
             alpha_ = 1
@@ -117,7 +127,7 @@ def train(Config,
             torch.cuda.synchronize()
 
             if Config.use_dcl:
-                print('step: {:-8d} / {:d} loss=ce_loss+swap_loss+law_loss: {:6.4f} = {:6.4f} + {:6.4f} + {:6.4f} '.format(step, train_epoch_step, loss.detach().item(), ce_loss.detach().item(), swap_loss.detach().item(), law_loss.detach().item()), flush=True)
+                print('step: {:-8d} / {:d} loss=ce_loss+swap_loss+law_loss+triplet_loss: {:6.4f} = {:6.4f} + {:6.4f} + {:6.4f} + {:6.4f}'.format(step, train_epoch_step, loss.detach().item(), ce_loss.detach().item(), swap_loss.detach().item(), law_loss.detach().item(),loss_triplet), flush=True)
             if Config.use_backbone:
                 print('step: {:-8d} / {:d} loss=ce_loss+swap_loss+law_loss: {:6.4f} = {:6.4f} '.format(step, train_epoch_step, loss.detach().item(), ce_loss.detach().item()), flush=True)
             rec_loss.append(loss.detach().item())
